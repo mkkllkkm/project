@@ -30,8 +30,8 @@ namespace Project
             size_x = 60;
             size_y = 90;
 
-            velocity_x = 10;
-            velocity_y = 10;
+            velocity_x = 12;
+            velocity_y = 12;
 
             lives = 3;
             bonus = 0;

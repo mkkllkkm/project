@@ -21,7 +21,7 @@ namespace Project
         
         Position objPosition;
         
-        System.Media.SoundPlayer soundPlay = new System.Media.SoundPlayer();
+        SoundPlayer soundPlayer = new SoundPlayer();
 
         Player player = new Player();
         Trash trash = new Trash(score);
@@ -35,18 +35,6 @@ namespace Project
 
             status = true;
             score = 0;
-
-            soundPlay.SoundLocation = "music.mp4";
-
-            try
-            {
-                soundPlay.Play();
-            }
-
-            catch
-            {
-                MessageBox.Show("Couldn't find music file", "Error");
-            }
 
             label1.Text = "Score: " + score.ToString();
             label2.Text = "Lives: " + player.lives.ToString();
@@ -124,11 +112,38 @@ namespace Project
             {
               
                 if (player.id == trash.id)
+                {
                     score += 5;
+
+                    soundPlayer.SoundLocation = "sounds/sound1.wav";
+
+                    try
+                    {
+                        soundPlayer.Play();
+                    }
+
+                    catch
+                    {
+                        MessageBox.Show("Couldn't find music file", "Error");
+                    }
+                }
+                    
 
                 else
                 {
                     --player.lives;
+
+                    soundPlayer.SoundLocation = "sounds/sound2.wav";
+
+                    try
+                    {
+                        soundPlayer.Play();
+                    }
+
+                    catch
+                    {
+                        MessageBox.Show("Couldn't find music file", "Error");
+                    }
 
                     if (player.lives == 0)
                     {
