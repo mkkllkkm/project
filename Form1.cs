@@ -1,10 +1,10 @@
-using System.Media;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Forms;
-using System.Windows.Forms.Automation;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using Application = System.Windows.Forms.Application;
+using System.Media; //audio files
+//using System.Windows.Forms;
+//using System.Windows.Forms.Automation;
+//using System.IO;    // read/write file
+//using static System.Net.Mime.MediaTypeNames;
+//using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+//using Application = System.Windows.Forms.Application;
 
 namespace Project
 {
@@ -16,7 +16,8 @@ namespace Project
 
     public partial class Form1 : Form
     {
-        static int score;        
+        static int score;
+        int bestScore, clickCounter;        
         bool status;
         
         Position objPosition;
@@ -35,6 +36,8 @@ namespace Project
 
             status = true;
             score = 0;
+            bestScore = 0;
+            clickCounter = 0;
 
             label1.Text = "Score: " + score.ToString();
             label2.Text = "Lives: " + player.lives.ToString();
@@ -42,7 +45,6 @@ namespace Project
             playerImage = new Bitmap("graphics/" + player.name);
             trashImage = new Bitmap("graphics/" + trash.name);
         }
-
 
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -64,7 +66,7 @@ namespace Project
                 objPosition = Position.Up; 
 
             else if (e.KeyCode == Keys.Down)
-                objPosition = Position.Down; 
+                objPosition = Position.Down;
         }
 
 
@@ -79,7 +81,7 @@ namespace Project
                 else if (objPosition == Position.Left && player.x > 5)
                     player.x -= player.velocity_x + player.bonus;
 
-                else if (objPosition == Position.Up && player.y > 35)
+                else if (objPosition == Position.Up && player.y > 10)
                     player.y -= player.velocity_y + player.bonus;
 
                 else if (objPosition == Position.Down && player.y < 305)
@@ -91,7 +93,7 @@ namespace Project
                 if (trash.x > 750 || trash.x < 0 - trash.size_x || trash.y > 450 || trash.y < 0 - trash.size_x)
                 {
                     if (player.id == trash.id)
-                        score -= 5;
+                        score -= 3;
 
                     else
                         ++score;
@@ -108,7 +110,7 @@ namespace Project
 
         public void Collision()
         {
-            if (player.CollisionDetected(trash, status) == false)
+            if (player.CollisionDetector(trash, status) == false)
             {
               
                 if (player.id == trash.id)
@@ -150,18 +152,19 @@ namespace Project
                         status = false;
                         label2.Text = "Lives: " + player.lives.ToString();
 
-                        MessageBox.Show("GAME OVER" + "\n" + "---------------" + "\n" + "Score: " + score.ToString(), ":(");
+                        SetBestScore();
+
+                        MessageBox.Show("GAME OVER" + "\n" + "---------------" + "\n" + "Best score: " + bestScore.ToString() + "\n" + "Score: " + score.ToString(), ":(");
                         DialogResult dialog = MessageBox.Show("Do you want to play again?", "Restart", MessageBoxButtons.YesNo);
 
-                        if (dialog == DialogResult.Yes)
-                            Application.Restart();
+                        if (dialog == DialogResult.Yes)                     
+                             Application.Restart();
 
                         else if (dialog == DialogResult.No)
                             Application.Exit();
                     }
 
                 }
-                    
 
                 Renew();
                 status = true;
@@ -184,30 +187,52 @@ namespace Project
         }
 
 
-        private void restartToolStripMenuItem_Click(object sender, EventArgs e)
+        public void SetBestScore()
         {
-            status = false;
-            DialogResult dialog = MessageBox.Show("Are you sure you want to restart?", "Restart", MessageBoxButtons.YesNo);
+            try
+            {
+                StreamReader sr = new StreamReader("data.txt");
+                
+                bestScore = Int32.Parse(sr.ReadLine() ?? string.Empty);
+                sr.Close();
+                
+                StreamWriter sw = new StreamWriter("data.txt");
 
-            if (dialog == DialogResult.Yes)
-                Application.Restart();
+                if (score > bestScore)
+                    bestScore = score;
 
-            else if (dialog == DialogResult.No)
-                status = true;
+                sw.WriteLine(bestScore);
+                sw.Close();
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
         }
 
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void label3_Click(object sender, EventArgs e)
         {
-            status = false;
-            DialogResult dialog = MessageBox.Show("Are you sure you want to quit?", "Exit", MessageBoxButtons.YesNo);
+            if(clickCounter % 2 == 0)
+            {
+                label3.Text = "Play";
+                pictureBox1.Visible = true;
+                status = false;
+                
+            }
 
-            if (dialog == DialogResult.Yes)
-                Application.Exit();
-
-            else if (dialog == DialogResult.No)
+            else
+            {
+                label3.Text = "Tutorial";
+                pictureBox1.Visible = false;
                 status = true;
+            }
+
+            ++clickCounter;
         }
+        
+
 
     }
 }

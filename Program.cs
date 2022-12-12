@@ -12,7 +12,7 @@ namespace Project
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Form1 window = new Form1();
-            Application.Run(window);          
+            Application.Run(window);
         }
 
     }

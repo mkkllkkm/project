@@ -64,7 +64,7 @@ namespace Project
         }
 
         
-        public bool CollisionDetected (Trash trash, bool status)
+        public bool CollisionDetector (Trash trash, bool status)
         {
             // top left corner
             if ((y > trash.y && y < trash.y + trash.size_y) && (x > trash.x && x < trash.x + trash.size_x))
